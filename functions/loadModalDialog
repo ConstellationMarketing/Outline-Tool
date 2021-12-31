@@ -1,0 +1,21 @@
+
+function loadModalDialog(params) {
+    const modal_settings = {
+        html: 'modal',
+        title: 'Modal Box',
+        width: 350,
+        height: 150,
+
+        ...params
+    }
+    const htmlRender = HtmlService.createTemplateFromFile(modal_settings.html)
+    const html = htmlRender.evaluate()
+    html.setWidth(modal_settings.width).setHeight(modal_settings.height)
+    SpreadsheetApp.getUi().showModalDialog(html, modal_settings.title)
+}
+
+
+function include(filename) {
+    return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
