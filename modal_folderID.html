@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <?!= include('styles') ?>
+</head>
+<body>
+
+<div class="container mt-2" id="vue_app" v-cloak>
+
+
+    <div class="alert alert-success" role="alert" v-show="isSuccess">
+        Folder ID successfully set!
+    </div>
+
+    <div class="alert alert-danger" role="alert" v-show="!isSuccess && isChecked">
+        Folder not found! Please check ID!
+    </div>
+
+    <div v-show="!isSuccess">
+        <div class="form-floating mb-3">
+            <input
+                    type="text"
+                    class="form-control"
+                    id="folder_id"
+                    placeholder="Paste ID here:"
+                    :disabled="isProcessSending"
+            >
+            <label for="folder_id">Folder ID</label>
+        </div>
+        <button
+                class="btn btn-primary mb-1"
+                :disabled="isProcessSending"
+                @click.prevent="checkID"
+        >
+            Set Folder ID
+        </button>
+    </div>
+
+    <button
+            class="btn btn-success mb-1"
+            :disabled="isProcessSending"
+            @click.prevent="closeModal"
+            v-show="isSuccess"
+    >
+        Close Modal
+    </button>
+
+</div>
+
+
+<?!= include('scripts') ?>
+<script src="https://unpkg.com/vue@next"></script>
+
+<script>
+    const App = {
+        data() {
+            return {
+                isProcessSending: false,
+                isSuccess: false,
+                isChecked: false
+            }
+        },
+        methods: {
+            checkID() {
+                this.isChecked = false
+                this.isProcessSending = true
+                const id = document.getElementById('folder_id')
+
+                google.script.run.withSuccessHandler(res => {
+                    console.log('res')
+                    console.log(res)
+                    this.isSuccess = Boolean(res)
+                    this.isChecked = true
+                    this.isProcessSending = false
+                }).setFolderID(id.value)
+            },
+            closeModal() {
+                google.script.host.close()
+            }
+        }
+    }
+
+    const app = Vue.createApp(App)
+    app.mount('#vue_app')
+
+</script>
+
+
+</body>
+</html>
