@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <?!= include('styles') ?>
+    <title>Document</title>
+</head>
+<body>
+
+
+<div class="container mt-2" id="modal_created" v-cloak>
+
+    <div class="alert alert-danger" role="alert" v-show="!isSuccess && isChecked">
+        Error occured!
+    </div>
+
+    <div v-show="!isChecked">
+        <?!= include('loader') ?>
+    </div>
+
+
+    <div v-show="isSuccess">
+        <div class="alert alert-success" role="alert">
+            Document created!
+        </div>
+
+        <a
+                target="_blank"
+                class="btn btn-info mb-1"
+                :href="`https://docs.google.com/document/d/${link_id}/edit`"
+                @click="closeModal"
+        >
+            View Document
+        </a>
+    </div>
+</div>
+
+
+<?!= include('scripts') ?>
+<script src="https://unpkg.com/vue@next"></script>
+
+<script>
+    const App = {
+        data() {
+            return {
+                isChecked: false,
+                isSuccess: false,
+                link_id: ''
+            }
+        },
+        mounted() {
+            google.script.run.withSuccessHandler(res => {
+                if (res) {
+                    console.log('RES EXECUTED')
+                    this.link_id = res
+                    this.isSuccess = true
+                }
+                this.isChecked = true
+            }).startReplacer()
+
+
+        },
+        methods: {
+            closeModal() {
+                setTimeout(() => google.script.host.close(), 100)
+            }
+
+        }
+    }
+
+    const app = Vue.createApp(App)
+    app.mount('#modal_created')
+
+
+</script>
+
+
+</body>
+</html>
